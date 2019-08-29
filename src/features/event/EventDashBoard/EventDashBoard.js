@@ -3,66 +3,16 @@ import { Grid, Button } from "semantic-ui-react";
 import EventList from "./../../event/EventList/EventList";
 import EventForm from "./../../event/EventForm/EventForm";
 import cuid from "cuid";
-const eventsDashBoard = [
-  {
-    id: "1",
-    title: "Trip to Tower of London",
-    date: "2018-03-27T11:00:00+00:00",
-    category: "culture",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.",
-    city: "London, UK",
-    venue: "Tower of London, St Katharine's & Wapping, London",
-    hostedBy: "Bob",
-    hostPhotoURL: "https://randomuser.me/api/portraits/men/20.jpg",
-    attendees: [
-      {
-        id: "a",
-        name: "Bob",
-        photoURL: "https://randomuser.me/api/portraits/men/20.jpg"
-      },
-      {
-        id: "b",
-        name: "Tom",
-        photoURL: "https://randomuser.me/api/portraits/men/22.jpg"
-      }
-    ]
-  },
-  {
-    id: "2",
-    title: "Trip to Punch and Judy Pub",
-    date: "2018-03-28T14:00:00+00:00",
-    category: "drinks",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.",
-    city: "London, UK",
-    venue: "Punch & Judy, Henrietta Street, London, UK",
-    hostedBy: "Tom",
-    hostPhotoURL: "https://randomuser.me/api/portraits/men/22.jpg",
-    attendees: [
-      {
-        id: "b",
-        name: "Tom",
-        photoURL: "https://randomuser.me/api/portraits/men/22.jpg"
-      },
-      {
-        id: "a",
-        name: "Bob",
-        photoURL: "https://randomuser.me/api/portraits/men/20.jpg"
-      }
-    ]
-  }
-];
-
+import { connect } from "react-redux";
+import { deleteEvent } from "./../eventAction";
 class EventDashBoard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      events: eventsDashBoard,
-      isOpen: false,
-      selectedEvent: null
-    };
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     isOpen: false,
+  //     selectedEvent: null
+  //   };
+  // }
   // arrow function
   handleFormOpen = () => {
     this.setState({
@@ -70,75 +20,82 @@ class EventDashBoard extends Component {
       isOpen: true
     });
   };
-  handleCancel = () => {
-    this.setState({
-      isOpen: false
-    });
-  };
+  // handleCancel = () => {
+  //   this.setState({
+  //     isOpen: false
+  //   });
+  // };
   handleCreateEvent = newEvent => {
+    // newEvent.id = cuid();
+    // newEvent.PhotoUrl = "/assets/uer.png";
+    // const updatedEvents = [...this.state.events, newEvent];
+    // this.setState({
+    //   events: updatedEvents,
+    //   isOpen: false
+    // });
+
     newEvent.id = cuid();
     newEvent.PhotoUrl = "/assets/uer.png";
-    const updatedEvents = [...this.state.events, newEvent];
+    this.props.createEvent(newEvent);
     this.setState({
-      events: updatedEvents,
       isOpen: false
     });
   };
   //edit of CRUD
-  handleOpenEvent = eventToOpen => () => {
-    this.setState({
-      selectedEvent: eventToOpen,
-      isOpen: true
-    });
-  };
+  // handleOpenEvent = eventToOpen => () => {
+  //   this.setState({
+  //     selectedEvent: eventToOpen,
+  //     isOpen: true
+  //   });
+  // };
   handleUpdateEvent = updatedEvent => {
-    this.setState({
-      events: this.state.events.map(event => {
-        if (event.id === updatedEvent.id) {
-          return Object.assign({}, updatedEvent);
-        } else {
-          return event;
-        }
-      }),
-      isOpen: false,
-      selectedEvent: null
-    });
+    // this.setState({
+    //   events: this.state.events.map(event => {
+    //     if (event.id === updatedEvent.id) {
+    //       return Object.assign({}, updatedEvent);
+    //     } else {
+    //       return event;
+    //     }
+    //   }),
+    //   isOpen: false,
+    //   selectedEvent: null
+    // });
+    // this.props.updateEvent(updateEvent);
+    // this.setState({
+    //   isOpen: false,
+    //   selectedEvent: null
+    // });
   };
   handleDeleteEvent = eventId => () => {
-    const updatedEvents = this.state.events.filter(e => e.id !== eventId);
-    this.setState({
-      events: updatedEvents
-    });
+    // const updatedEvents = this.state.events.filter(e => e.id !== eventId);
+    // this.setState({
+    //   events: updatedEvents
+    // });
+
+    this.props.deleteEvent(eventId);
   };
   render() {
-    const { selectedEvent } = this.state;
+    const { events } = this.props;
     return (
       <Grid>
         <Grid.Column width={10}>
-          <EventList
-            deleteEvent={this.handleDeleteEvent}
-            onEventOpen={this.handleOpenEvent}
-            events={this.state.events}
-          />
+          <EventList deleteEvent={this.handleDeleteEvent} events={events} />
         </Grid.Column>
-        <Grid.Column width={6}>
-          <Button
-            onClick={() => this.handleFormOpen("sdf")}
-            positive
-            content="Create Event"
-          />
-          {this.state.isOpen && (
-            <EventForm
-              updateEvent={this.handleUpdateEvent}
-              selectedEvent={selectedEvent}
-              createEvent={this.handleCreateEvent}
-              handleCancel={this.handleCancel}
-            />
-          )}
-        </Grid.Column>
+        <Grid.Column width={6}></Grid.Column>
       </Grid>
     );
   }
 }
 
-export default EventDashBoard;
+const mapStateToProps = state => ({
+  events: state.events
+});
+const actions = {
+  // createEvent,
+  deleteEvent
+  // updateEvent
+};
+export default connect(
+  mapStateToProps,
+  actions
+)(EventDashBoard);
